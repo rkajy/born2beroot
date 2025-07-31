@@ -2,6 +2,13 @@
 
 set -e
 
+### === INSTALLATION DE BASE === ###
+echo "[0/10] Vérification de sudo..."
+if ! command -v sudo &>/dev/null; then
+  echo "⚠️ sudo non installé. Installation en cours..."
+  apt update && apt install -y sudo
+fi
+
 ### === PARAMÈTRES === ###
 SUDO_LOG_DIR="/var/log/sudo"
 MONITOR_SCRIPT="/usr/local/bin/monitoring.sh"
@@ -65,6 +72,9 @@ chmod 700 "$SUDO_LOG_DIR"
 touch /etc/sudoers.d/42sudo
 echo "$USERNAME ALL=(ALL:ALL) ALL" > /etc/sudoers.d/42sudo
 grep -q "Defaults logfile=" /etc/sudoers || echo "Defaults logfile=\"$SUDO_LOG_DIR/sudo.log\"" >> /etc/sudoers
+grep -q 'Defaults log_input' /etc/sudoers || echo 'Defaults log_input' >> /etc/sudoers
+grep -q 'Defaults log_output' /etc/sudoers || echo 'Defaults log_output' >> /etc/sudoers
+grep -q 'Defaults iolog_dir=' /etc/sudoers || echo 'Defaults iolog_dir="/var/log/sudo"' >> /etc/sudoers
 grep -q "Defaults badpass_message=" /etc/sudoers || echo "Defaults badpass_message=\"Wrong password... Access Denied.\"" >> /etc/sudoers
 grep -q "Defaults passwd_tries=" /etc/sudoers || echo "Defaults passwd_tries=3" >> /etc/sudoers
 grep -q "Defaults requiretty" /etc/sudoers || echo "Defaults requiretty" >> /etc/sudoers
